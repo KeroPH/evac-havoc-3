@@ -1,0 +1,55 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://scenes/player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scripts/test_level.gd" type="Script" id=2]
+[ext_resource path="res://scenes/island01.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/gauge.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/person.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/pause_popup.tscn" type="PackedScene" id=6]
+
+[node name="test_level" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="ui" type="CanvasLayer" parent="."]
+
+[node name="gauge" parent="ui" instance=ExtResource( 4 )]
+margin_left = 47.6131
+margin_top = 46.2527
+margin_right = 47.613
+margin_bottom = 46.2527
+rect_scale = Vector2( 0.2, 0.2 )
+
+[node name="pause_menu" parent="ui" instance=ExtResource( 6 )]
+
+[node name="island01" parent="." instance=ExtResource( 3 )]
+position = Vector2( 245.384, 211.303 )
+scale = Vector2( 0.3, 0.3 )
+
+[node name="island02" parent="." instance=ExtResource( 3 )]
+position = Vector2( 1008.8, 465.775 )
+scale = Vector2( 0.3, 0.3 )
+
+[node name="island03" parent="." instance=ExtResource( 3 )]
+position = Vector2( 333.995, 899.742 )
+scale = Vector2( 0.3, 0.3 )
+
+[node name="island04" parent="." instance=ExtResource( 3 )]
+position = Vector2( 1351.88, 224.935 )
+scale = Vector2( 0.3, 0.3 )
+
+[node name="island05" parent="." instance=ExtResource( 3 )]
+position = Vector2( 1067.88, 820.219 )
+scale = Vector2( 0.3, 0.3 )
+
+[node name="island06" parent="." instance=ExtResource( 3 )]
+position = Vector2( 1699.51, 588.467 )
+scale = Vector2( 0.3, 0.3 )
+
+[node name="player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 1011.74, 366.495 )
+scale = Vector2( 0.2, 0.2 )
+
+[node name="people_cont" type="Node2D" parent="."]
+
+[node name="person" parent="people_cont" groups=["people"] instance=ExtResource( 5 )]
+position = Vector2( 1697.85, 502.384 )
