@@ -9,12 +9,24 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Resource",
+"class": "HelicopterConfig",
+"language": "GDScript",
+"path": "res://scripts/helicopter_config.gd"
+}, {
+"base": "Node",
+"class": "HelicopterFactory",
+"language": "GDScript",
+"path": "res://scripts/helicopter_factory.gd"
+}, {
 "base": "KinematicBody2D",
 "class": "Player",
 "language": "GDScript",
 "path": "res://scripts/player.gd"
 } ]
 _global_script_class_icons={
+"HelicopterConfig": "",
+"HelicopterFactory": "",
 "Player": ""
 }
 
@@ -28,6 +40,7 @@ config/icon="res://assets/icon.png"
 [autoload]
 
 bgm="*res://scripts/bgm.gd"
+score_manager="*res://scripts/score_manager.gd"
 
 [display]
 
@@ -70,3 +83,4 @@ move_left={
 [rendering]
 
 quality/driver/driver_name="GLES2"
+2d/snapping/use_gpu_pixel_snap=true

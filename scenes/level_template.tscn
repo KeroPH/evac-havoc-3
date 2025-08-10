@@ -18,6 +18,8 @@ extents = Vector2( 160, 30 )
 
 [node name="level" type="Node2D"]
 script = ExtResource( 3 )
+dialogue_text = null
+next_scene = null
 
 [node name="bg" type="ParallaxBackground" parent="."]
 

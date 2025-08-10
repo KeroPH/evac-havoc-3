@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://assets/sprites/helicopter.svg" type="Texture" id=1]
+[ext_resource path="res://assets/helicopter_sprites/police_heli/body.png" type="Texture" id=1]
 [ext_resource path="res://scripts/player.gd" type="Script" id=2]
 [ext_resource path="res://assets/sprites/prop_frames.tres" type="SpriteFrames" id=3]
 [ext_resource path="res://assets/sfx/explosion.wav" type="AudioStream" id=4]
@@ -14,24 +14,32 @@ height = 600.0
 radius = 45.0
 
 [node name="player" type="KinematicBody2D"]
+scale = Vector2( 0.314561, 0.314561 )
 script = ExtResource( 2 )
 
 [node name="body_sprite" type="Sprite" parent="."]
 position = Vector2( -38.0906, 21.766 )
+scale = Vector2( 7.07773, 7.07773 )
 texture = ExtResource( 1 )
+flip_h = true
 
 [node name="body_shape" type="CollisionPolygon2D" parent="."]
-polygon = PoolVector2Array( 335.709, 115.944, 311.155, 124.284, -142.533, 124.479, -152.56, 84.1437, -236.983, 79.6018, -303.397, 76.5829, -390.566, 46.772, -422.413, -57.0512, -400.421, -68.4543, -324.151, 16.5837, -133.263, -0.0357971, -54.2559, -26.1, 78.5087, -48.9062, 151.814, -44.8336, 209.644, -29.358, 262.587, -1.66483, 279.692, 28.4719, 339.151, 56.1651, 344.852, 70.0117 )
+visible = false
+position = Vector2( -28.1763, -2.81763 )
+polygon = PoolVector2Array( 301.487, 107.07, 244.351, 123.621, 231.634, 149.053, 190.307, 168.127, -35.4044, 168.127, -38.5834, 155.411, -9.97211, 152.232, -6.79308, 126.8, -81.7113, 95.7995, -143.699, 53.535, -236.681, 45.0821, -332.481, 42.2645, -390.566, 46.772, -366.292, 28.1763, -408.557, -73.2584, -366.292, -64.8055, -309.94, 2.81763, -140.882, -4.76837e-06, -126.793, -33.8116, 14.0882, -59.1703, 104.252, -47.8997, 135.246, -19.7234, 214.14, -4.76837e-06, 290.216, 50.7174, 312.757, 70.4408 )
 
 [node name="top_prop" type="Area2D" parent="."]
 position = Vector2( 88.0989, -85.6804 )
 
 [node name="shape" type="CollisionShape2D" parent="top_prop"]
+visible = false
+position = Vector2( -82.4637, 3.96909 )
 rotation = 1.5708
 shape = SubResource( 1 )
 
 [node name="sprite" type="AnimatedSprite" parent="top_prop"]
-scale = Vector2( 1.16, 0.09 )
+position = Vector2( -81.7408, -6.51158 )
+scale = Vector2( 6.92358, 8.02558 )
 frames = ExtResource( 3 )
 playing = true
 
