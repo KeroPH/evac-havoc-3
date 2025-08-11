@@ -1,48 +1,15 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scripts/menu.gd" type="Script" id=1]
-[ext_resource path="res://assets/fonts/SpeedeasySpeedy.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://assets/fonts/Speedeasy.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://assets/sprites/1000_F_1166938451_MSjcV27HHRcfVlONik4B8CsjfNGWXELB.jpg" type="Texture" id=4]
-[ext_resource path="res://assets/alagard.ttf" type="DynamicFontData" id=5]
-[ext_resource path="res://assets/button.png" type="Texture" id=9]
 [ext_resource path="res://scripts/menu_bg_helis.gd" type="Script" id=10]
 
-[sub_resource type="DynamicFont" id=1]
-size = 45
-outline_size = 1
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 3 )
+[sub_resource type="DynamicFontData" id=1]
+font_path = "res://assets/alagard.ttf"
 
 [sub_resource type="DynamicFont" id=2]
-size = 26
-outline_size = 1
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 2 )
-
-[sub_resource type="DynamicFont" id=3]
-size = 17
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-extra_spacing_char = 4
-font_data = ExtResource( 5 )
-
-[sub_resource type="StyleBoxTexture" id=5]
-texture = ExtResource( 9 )
-region_rect = Rect2( 0, 0, 64, 64 )
-margin_left = 16.0
-margin_right = 16.0
-margin_top = 16.0
-margin_bottom = 16.0
-modulate_color = Color( 0.737255, 0.737255, 0.737255, 1 )
-
-[sub_resource type="StyleBoxTexture" id=4]
-texture = ExtResource( 9 )
-region_rect = Rect2( 0, 0, 64, 64 )
-margin_left = 16.0
-margin_right = 16.0
-margin_top = 16.0
-margin_bottom = 16.0
+size = 60
+font_data = SubResource( 1 )
 
 [node name="menu" type="Control"]
 anchor_right = 1.0
@@ -57,7 +24,7 @@ margin_bottom = 40.0
 color = Color( 0, 0.843137, 0.929412, 1 )
 
 [node name="bg_mtns" type="Sprite" parent="."]
-position = Vector2( -126, -219 )
+position = Vector2( -117, -237 )
 scale = Vector2( 1.57252, 1.57252 )
 texture = ExtResource( 4 )
 centered = false
@@ -71,22 +38,16 @@ spawn_both_directions = false
 anchor_top = 0.05
 anchor_right = 1.0
 anchor_bottom = 0.15
-custom_colors/font_color = Color( 0.933333, 0, 0, 1 )
-custom_fonts/font = SubResource( 1 )
-text = "Evac Havoc 2"
+custom_fonts/font = SubResource( 2 )
+text = "Evac Havoc 3"
 align = 1
 valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="subtitle" type="Label" parent="."]
 anchor_top = 0.16
 anchor_right = 1.0
 anchor_bottom = 0.2
-custom_colors/font_color = Color( 0.933333, 0, 0, 1 )
-custom_fonts/font = SubResource( 2 )
-text = "Floating Boogaloo"
+text = "Modified by: Adrian Ebrao, BSCS-3"
 align = 1
 valign = 1
 
@@ -103,20 +64,12 @@ alignment = 1
 margin_top = 132.0
 margin_right = 200.0
 margin_bottom = 181.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 3 )
-custom_styles/hover = SubResource( 5 )
-custom_styles/normal = SubResource( 4 )
 text = "PLAY"
 
 [node name="login" type="Button" parent="vbox"]
 margin_top = 199.0
 margin_right = 200.0
 margin_bottom = 282.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 3 )
-custom_styles/hover = SubResource( 5 )
-custom_styles/normal = SubResource( 4 )
 text = "LOGGED IN AS:
 
 CARENDERIAS"
@@ -125,40 +78,24 @@ CARENDERIAS"
 margin_top = 300.0
 margin_right = 200.0
 margin_bottom = 349.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 3 )
-custom_styles/hover = SubResource( 5 )
-custom_styles/normal = SubResource( 4 )
 text = "HELICOPTER"
 
 [node name="tutorial" type="Button" parent="vbox"]
 margin_top = 367.0
 margin_right = 200.0
 margin_bottom = 416.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 3 )
-custom_styles/hover = SubResource( 5 )
-custom_styles/normal = SubResource( 4 )
 text = "TUTORIAL"
 
 [node name="leaderboard" type="Button" parent="vbox"]
 margin_top = 434.0
 margin_right = 200.0
 margin_bottom = 483.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 3 )
-custom_styles/hover = SubResource( 5 )
-custom_styles/normal = SubResource( 4 )
 text = "LEADERBOARD"
 
 [node name="exit" type="Button" parent="vbox"]
 margin_top = 501.0
 margin_right = 200.0
 margin_bottom = 550.0
-custom_colors/font_color = Color( 1, 1, 1, 1 )
-custom_fonts/font = SubResource( 3 )
-custom_styles/hover = SubResource( 5 )
-custom_styles/normal = SubResource( 4 )
 text = "EXIT"
 
 [connection signal="button_up" from="vbox/play" to="." method="_on_start_btn_up"]

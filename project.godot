@@ -49,6 +49,11 @@ window/size/height=720
 window/dpi/allow_hidpi=true
 window/stretch/mode="viewport"
 
+[gui]
+
+theme/custom="res://assets/themes/ui_theme.tres"
+theme/custom_font="res://assets/Pixellari.ttf"
+
 [input]
 
 move_up={

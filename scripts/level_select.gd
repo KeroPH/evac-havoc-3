@@ -1,6 +1,6 @@
 extends Control
 
-onready var grid = $vbox/scroll/grid
+onready var grid = null
 onready var back_btn = $vbox/bottom/back_btn
 
 const MENU_SCENE := "res://scenes/menu.tscn"
@@ -14,6 +14,14 @@ func d(msg):
 		print("[level-select] ", msg)
 
 func _ready():
+	# Resolve grid path (supports both with/without CenterContainer)
+	if has_node("vbox/scroll/center/grid"):
+		grid = $vbox/scroll/center/grid
+	elif has_node("vbox/scroll/grid"):
+		grid = $vbox/scroll/grid
+	else:
+		push_error("level_select.gd: grid node not found under scroll")
+		return
 	# Apply column count
 	grid.columns = columns
 	_populate()
@@ -34,7 +42,7 @@ func _populate():
 		var btn = Button.new()
 		btn.text = _pretty_name_from_path(p)
 		btn.rect_min_size = Vector2(200, 80)
-		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		btn.size_flags_horizontal = 0 # don't expand horizontally; allow centering in grid
 		btn.connect("button_up", self, "_on_level_btn", [p])
 		grid.add_child(btn)
 
