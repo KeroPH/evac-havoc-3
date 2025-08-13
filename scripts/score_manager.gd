@@ -2,9 +2,21 @@ extends Node
 
 const PROFILE_PATH := "user://profile.cfg"
 const SCORES_PATH := "user://scores.cfg"
+const ACCOUNTS_PATH := "user://accounts.cfg"
 
 var player_name := "Guest"
 var _level_starts := {}
+const LOGIN_OK := 0
+const LOGIN_WRONG_PASSWORD := 1
+const LOGIN_NEED_CLAIM_CONFIRM := 2
+const LOGIN_INVALID := 3
+const LOGIN_NOT_FOUND := 4
+const CHANGE_OK := 0
+const CHANGE_WRONG_OLD := 1
+const CHANGE_FORBIDDEN := 2
+const CREATE_OK := 0
+const CREATE_EXISTS := 1
+const CREATE_INVALID := 2
 
 func _ready():
 	_load_profile()
@@ -20,6 +32,161 @@ func set_player_name(name: String):
 
 func get_player_name():
 	return player_name
+
+# --- AUTH / ACCOUNTS ---
+
+func account_exists(name: String) -> bool:
+	var accounts = _load_accounts()
+	return accounts.has(name)
+
+func signin(name: String, password: String) -> int:
+	name = str(name).strip_edges()
+	password = str(password)
+	if name == "" or name == "Guest":
+		player_name = "Guest"
+		_save_profile()
+		return LOGIN_OK
+	var accounts = _load_accounts()
+	if not accounts.has(name):
+		return LOGIN_NOT_FOUND
+	var entry = accounts[name]
+	if typeof(entry) == TYPE_DICTIONARY and entry.has("hash") and entry.has("salt"):
+		var ok = _verify_password(password, entry.get("salt", ""), entry.get("hash", ""))
+		if ok:
+			player_name = name
+			_save_profile()
+			return LOGIN_OK
+		return LOGIN_WRONG_PASSWORD
+	else:
+		# unsecured account
+		player_name = name
+		_save_profile()
+		return LOGIN_OK
+
+func login(name: String, password: String, confirm_claim := false) -> int:
+	name = str(name).strip_edges()
+	password = str(password)
+	if name == "" or name == "Guest":
+		player_name = "Guest"
+		_save_profile()
+		return LOGIN_OK
+	var accounts = _load_accounts()
+	if accounts.has(name):
+		var entry = accounts[name]
+		if typeof(entry) == TYPE_DICTIONARY and entry.has("hash") and entry.has("salt"):
+			# Secured account: require correct password
+			var ok = _verify_password(password, entry.get("salt", ""), entry.get("hash", ""))
+			if ok:
+				player_name = name
+				_save_profile()
+				return LOGIN_OK
+			return LOGIN_WRONG_PASSWORD
+		else:
+			# Unsecured account (blank password)
+			if password.strip_edges() == "":
+				player_name = name
+				_save_profile()
+				return LOGIN_OK
+			# Wants to claim with a password
+			if not confirm_claim:
+				return LOGIN_NEED_CLAIM_CONFIRM
+			_set_account_password(accounts, name, password)
+			_save_accounts(accounts)
+			player_name = name
+			_save_profile()
+			return LOGIN_OK
+	else:
+		# Account does not exist yet: for explicit signin use LOGIN_NOT_FOUND
+		return LOGIN_NOT_FOUND
+
+func signup(name: String, password: String) -> int:
+	name = str(name).strip_edges()
+	password = str(password)
+	if name == "" or name == "Guest":
+		return CREATE_INVALID
+	var accounts = _load_accounts()
+	if accounts.has(name):
+		return CREATE_EXISTS
+	if password.strip_edges() == "":
+		# create unsecured entry
+		accounts[name] = {}
+	else:
+		_set_account_password(accounts, name, password)
+	_save_accounts(accounts)
+	player_name = name
+	_save_profile()
+	return CREATE_OK
+
+func logout():
+	player_name = "Guest"
+	_save_profile()
+
+func change_password(old_password: String, new_password: String) -> int:
+	var name = player_name
+	if name == null or name == "" or name == "Guest":
+		return CHANGE_FORBIDDEN
+	var accounts = _load_accounts()
+	var entry = accounts.get(name, null)
+	if typeof(entry) == TYPE_DICTIONARY and entry.has("hash") and entry.has("salt"):
+		# Secured: verify old
+		var ok = _verify_password(old_password, entry.get("salt", ""), entry.get("hash", ""))
+		if not ok:
+			return CHANGE_WRONG_OLD
+		_set_account_password(accounts, name, new_password)
+		_save_accounts(accounts)
+		return CHANGE_OK
+	else:
+		# Unsecured: allow set without old (old may be blank)
+		_set_account_password(accounts, name, new_password)
+		_save_accounts(accounts)
+		return CHANGE_OK
+
+func is_account_secured(name: String) -> bool:
+	var accounts = _load_accounts()
+	if accounts.has(name):
+		var entry = accounts[name]
+		return typeof(entry) == TYPE_DICTIONARY and entry.has("hash") and entry.has("salt")
+	return false
+
+func _set_account_password(accounts: Dictionary, name: String, password: String) -> void:
+	var salt = _gen_salt()
+	var h = _hash_password(password, salt)
+	accounts[name] = {"salt": salt, "hash": h}
+
+func _gen_salt() -> String:
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
+	var bytes = PoolByteArray()
+	for i in range(16):
+		bytes.append(int(rng.randi() % 256))
+	return Marshalls.raw_to_base64(bytes)
+
+func _hash_password(password: String, salt: String) -> String:
+	var hc = HashingContext.new()
+	hc.start(HashingContext.HASH_SHA256)
+	hc.update(Marshalls.base64_to_raw(salt))
+	hc.update(password.to_utf8())
+	var digest: PoolByteArray = hc.finish()
+	return Marshalls.raw_to_base64(digest)
+
+func _verify_password(password: String, salt: String, expected_hash: String) -> bool:
+	return _hash_password(password, salt) == str(expected_hash)
+
+func _load_accounts() -> Dictionary:
+	var cf = ConfigFile.new()
+	var err = cf.load(ACCOUNTS_PATH)
+	var json_text = "{}"
+	if err == OK:
+		json_text = str(cf.get_value("accounts", "data", "{}"))
+	var parsed = JSON.parse(json_text)
+	if parsed.error == OK and typeof(parsed.result) == TYPE_DICTIONARY:
+		return parsed.result
+	return {}
+
+func _save_accounts(data: Dictionary) -> void:
+	var cf = ConfigFile.new()
+	cf.set_value("accounts", "data", to_json(data))
+	cf.save(ACCOUNTS_PATH)
 
 func start_level(level_id: String):
 	_level_starts[level_id] = OS.get_ticks_msec()

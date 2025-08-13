@@ -31,20 +31,33 @@ margin_right = 300.0
 margin_bottom = 17.0
 text = "Player name"
 
-[node name="name_edit" type="LineEdit" parent="center/vbox"]
+[node name="name_label" type="Label" parent="center/vbox"]
 margin_top = 29.0
 margin_right = 300.0
 margin_bottom = 65.0
 rect_min_size = Vector2( 300, 36 )
+text = ""
 
-[node name="save_btn" type="Button" parent="center/vbox"]
+[node name="signin_btn" type="Button" parent="center/vbox"]
 margin_top = 77.0
 margin_right = 300.0
 margin_bottom = 126.0
-text = "Save"
+text = "Sign in"
+
+[node name="signup_btn" type="Button" parent="center/vbox"]
+margin_top = 138.0
+margin_right = 300.0
+margin_bottom = 187.0
+text = "Sign up"
+
+[node name="logout_btn" type="Button" parent="center/vbox"]
+margin_top = 199.0
+margin_right = 300.0
+margin_bottom = 276.0
+text = "Log out"
 
 [node name="back_btn" type="Button" parent="center/vbox"]
-margin_top = 138.0
+margin_top = 288.0
 margin_right = 300.0
 margin_bottom = 187.0
 text = "Back"
