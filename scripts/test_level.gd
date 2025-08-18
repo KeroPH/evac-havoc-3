@@ -7,6 +7,11 @@ onready var fuel_gauge = $ui/gauge
 
 func _ready():
 	player.connect("remaining_fuel", fuel_gauge, "_on_fuel_update")
+	# Initialize gauge immediately to current player fuel
+	if is_instance_valid(fuel_gauge):
+		var fmax = max(0.001, float(player.fuel_max))
+		var fval = float(player.fuel)
+		fuel_gauge._on_fuel_update(clamp(fval / fmax, 0.0, 1.0))
 	for person in get_tree().get_nodes_in_group("people"):
 		person.connect("person_saved", self, "_on_person_saved")
 

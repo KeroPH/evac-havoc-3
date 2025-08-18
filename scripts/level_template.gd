@@ -7,6 +7,12 @@ export var dialogue_text = []
 export var next_scene = "res://scenes/menu.tscn"
 export(PackedScene) var helicopter_scene
 
+# Optional per-level fuel overrides (-1 means use defaults from Player scene)
+export(float, -1, 100000) var fuel_max_override := -1.0
+export(float, -1, 100000) var starting_fuel := -1.0
+export(bool) var debug_logs := false
+var _dbg_accum := 0.0
+
 var remaining_people
 
 
@@ -27,14 +33,53 @@ func _ready():
 
 	if helicopter_scene != null:
 		var old_player = $player
-		var new_player = helicopter_scene.instance()
-		new_player.name = "player"
-		new_player.position = old_player.position
-		old_player.get_parent().add_child_below_node(old_player, new_player)
-		old_player.queue_free()
+		var candidate = helicopter_scene.instance()
+		var compatible := false
+		if candidate != null:
+			# Consider compatible if it emits the expected fuel signal (i.e., extends Player)
+			compatible = candidate.has_signal("remaining_fuel")
+		if compatible and is_instance_valid(old_player):
+			var parent = old_player.get_parent()
+			var pos = old_player.position
+			# Remove old first to avoid duplicate names; then add the new one as 'player'
+			parent.remove_child(old_player)
+			old_player.queue_free()
+			candidate.name = "player"
+			candidate.position = pos
+			parent.add_child(candidate)
+		else:
+			# Keep the original player if the selected scene is not a proper Player variant
+			if is_instance_valid(candidate):
+				candidate.queue_free()
 
-	# Connect gauge after we know which player is present
-	$player.connect("remaining_fuel", $ui/gauge, "_on_fuel_update")
+	# Connect gauge after we know which player is present and apply fuel overrides
+	var player = get_node_or_null("player")
+	var gauge = get_node_or_null("ui/gauge")
+	if player != null and player.has_signal("remaining_fuel") and gauge != null:
+		# Apply per-level overrides (safe even after Player._ready())
+		var fmax := float(player.fuel_max)
+		if fuel_max_override >= 0.0:
+			fmax = max(0.001, float(fuel_max_override))
+			player.fuel_max = fmax
+		var fval := fmax # default start full
+		if starting_fuel >= 0.0:
+			fval = clamp(float(starting_fuel), 0.0, fmax)
+		player.fuel = fval
+
+		player.connect("remaining_fuel", gauge, "_on_fuel_update")
+		# Also connect once more on the next idle frame to avoid timing edge cases
+		call_deferred("_deferred_connect")
+		# Initialize gauge to the actual starting fuel level
+		gauge._on_fuel_update(clamp(fval / max(0.001, fmax), 0.0, 1.0))
+	else:
+		push_warning("level_template: Player does not provide remaining_fuel signal; gauge will not update.")
+
+func _deferred_connect():
+	var player = get_node_or_null("player")
+	var gauge = get_node_or_null("ui/gauge")
+	if player != null and gauge != null:
+		if not player.is_connected("remaining_fuel", gauge, "_on_fuel_update"):
+			player.connect("remaining_fuel", gauge, "_on_fuel_update")
 	$helipad.connect("body_entered", self, "_on_helipad_land")
 	for person in get_tree().get_nodes_in_group("people"):
 		person.connect("person_saved", self, "_on_person_saved")
@@ -52,6 +97,23 @@ func _ready():
 func _process(delta):
 	if Input.is_action_just_pressed("ui_cancel"):
 		_pause_game()
+	if debug_logs:
+		_dbg_accum += delta
+		if _dbg_accum >= 0.5:
+			_dbg_accum = 0.0
+			var player = get_node_or_null("player")
+			var gauge = get_node_or_null("ui/gauge")
+			var connected := false
+			if player != null and gauge != null:
+				connected = player.is_connected("remaining_fuel", gauge, "_on_fuel_update")
+			var fmax := 1.0
+			var fval := 0.0
+			if player != null:
+				if "fuel_max" in player:
+					fmax = max(0.001, float(player.fuel_max))
+				if "fuel" in player:
+					fval = float(player.fuel)
+			print("[level] paused=", str(get_tree().paused), " connected=", str(connected), " fuel=", String(fval), "/", String(fmax))
 
 func _pause_game():
 	var pause_menu = PausePopup.instance()

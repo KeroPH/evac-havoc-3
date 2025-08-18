@@ -29,10 +29,17 @@ var fuel : float = 0.0
 var out_of_fuel : bool = false
 var crashed : bool = false
 
+# Debug
+export(bool) var debug_fuel := false
+var _dbg_accum := 0.0
+
 # Signals
 signal remaining_fuel
 
 func _ready():
+	# Ensure physics/process are enabled
+	set_physics_process(true)
+	set_process(true)
 	top_propeller.connect("body_entered", self, "_on_propeller_collide")
 	back_propeller.connect("body_entered", self, "_on_propeller_collide")
 	# Start with full fuel for this helicopter type
@@ -88,6 +95,13 @@ func _physics_process(delta):
 		call_deferred("_handle_out_of_fuel")
 	
 	emit_signal("remaining_fuel", clamp(fuel / max(fuel_max, 0.001), 0.0, 1.0))
+
+	# Occasional debug to confirm emission cadence
+	if debug_fuel:
+		_dbg_accum += delta
+		if _dbg_accum >= 0.5:
+			_dbg_accum = 0.0
+			print("[player] fuel=", String(fuel), "/", String(fuel_max))
 
 func _on_propeller_collide(body):
 	if crashed or body == self:
