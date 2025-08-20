@@ -106,6 +106,17 @@ func _physics_process(delta):
 func _on_propeller_collide(body):
 	if crashed or body == self:
 		return
+	crash()
+
+func _handle_out_of_fuel():
+	yield(get_tree().create_timer(5), "timeout")
+	if is_inside_tree():
+		get_tree().change_scene("res://scenes/menu.tscn")
+
+# Public: trigger a crash sequence (used by hazards like bullets)
+func crash():
+	if crashed:
+		return
 	crashed = true
 	if has_node("heli_audio"): $heli_audio.stop()
 	if has_node("expl_audio"): $expl_audio.play()
@@ -113,10 +124,6 @@ func _on_propeller_collide(body):
 	tween.interpolate_property(self, "modulate:a", 1, 0, 0.6, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	tween.start()
 	yield(tween, "tween_all_completed")
-	get_tree().change_scene("res://scenes/menu.tscn")
-
-func _handle_out_of_fuel():
-	yield(get_tree().create_timer(5), "timeout")
 	if is_inside_tree():
 		get_tree().change_scene("res://scenes/menu.tscn")
 
