@@ -1,6 +1,5 @@
 extends Control
 onready var login_btn = $vbox/login
-
 func _ready():
 	var name = "Guest"
 	if has_node("/root/score_manager"):

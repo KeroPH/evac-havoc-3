@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scripts/menu.gd" type="Script" id=1]
-[ext_resource path="res://assets/sprites/1000_F_1166938451_MSjcV27HHRcfVlONik4B8CsjfNGWXELB.jpg" type="Texture" id=4]
+[ext_resource path="res://assets/sprites/bg.png" type="Texture" id=2]
 [ext_resource path="res://scripts/menu_bg_helis.gd" type="Script" id=10]
 
 [sub_resource type="DynamicFontData" id=1]
@@ -26,7 +26,7 @@ color = Color( 0, 0.843137, 0.929412, 1 )
 [node name="bg_mtns" type="Sprite" parent="."]
 position = Vector2( -117, -237 )
 scale = Vector2( 1.57252, 1.57252 )
-texture = ExtResource( 4 )
+texture = ExtResource( 2 )
 centered = false
 offset = Vector2( -14, 120 )
 

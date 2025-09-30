@@ -5,6 +5,7 @@
 [ext_resource path="res://scenes/level_template.tscn" type="PackedScene" id=3]
 
 [node name="level" instance=ExtResource( 3 )]
+next_scene = "res://scenes/levels/05.tscn"
 fuel_max_override = 400.0
 starting_fuel = 400.0
 
